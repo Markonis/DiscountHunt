@@ -21,4 +21,9 @@
     <string name="friends_photo">Friend\'s Photo</string>
     <string name="rank">Rank:</string>
     <string name="discounts_found">Discounts Found</string>
+    <string name="title_activity_discounts_list">DiscountsListActivity</string>
+    <string name="showing">Showing</string>
+    <string name="in">in</string>
+    <string name="radius">radius</string>
+    <string name="discounts">discounts</string>
 </resources>
