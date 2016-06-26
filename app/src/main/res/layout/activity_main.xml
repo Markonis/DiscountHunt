@@ -5,31 +5,42 @@
     android:layout_height="match_parent"
     tools:context="rs.elfak.mosis.marko.discounthunt.MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/discount_hunt"
+        android:layout_above="@id/shopping_cart"
+        android:layout_marginBottom="20dp"
+        android:layout_centerHorizontal="true" />
+
     <ImageView
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:id="@+id/imageView"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:id="@+id/shopping_cart"
         android:background="@drawable/shopping_cart"
+        android:contentDescription="@string/cart_graphic"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        android:contentDescription="@string/cart_graphic" />
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signin"
-        android:id="@id/signin"
-        android:layout_below="@+id/imageView"
+        android:id="@+id/signin"
+        android:layout_below="@id/shopping_cart"
         android:layout_centerHorizontal="true"
-        android:visibility="gone" />
+        android:visibility="visible"
+        android:layout_centerInParent="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/show_map"
         android:id="@+id/show_map"
-        android:layout_below="@id/signin"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@id/shopping_cart"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
 
 </RelativeLayout>

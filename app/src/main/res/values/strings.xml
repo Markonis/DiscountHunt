@@ -35,5 +35,6 @@
     <string name="cart_graphic">Cart Graphic</string>
     <string name="show_discounts_list">Show Discounts List</string>
     <string name="add_friend">Add Friend</string>
+    <string name="discount_hunt">Discount Hunt</string>
 
 </resources>
