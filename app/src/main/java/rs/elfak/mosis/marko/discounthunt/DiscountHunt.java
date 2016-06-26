@@ -6,9 +6,12 @@ import android.content.Context;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONObject;
+
 public class DiscountHunt extends Application {
     public static Context context;
     public static RequestQueue requestQueue;
+    public static JSONObject currentUser;
 
     @Override
     public void onCreate() {
