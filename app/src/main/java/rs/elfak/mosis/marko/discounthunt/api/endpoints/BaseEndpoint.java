@@ -12,7 +12,7 @@ import rs.elfak.mosis.marko.discounthunt.DiscountHunt;
 
 public class BaseEndpoint {
 
-    public static final String API_URL = "";
+    public static final String API_URL = "https://discount-hunt-markomedia.c9users.io";
 
     private String url;
     public BaseEndpoint(String path) {
@@ -42,7 +42,7 @@ public class BaseEndpoint {
     private void execute(String url, int type, JSONObject requestBody, Response.Listener successListener,
                          Response.ErrorListener errorListener) {
         JsonObjectRequest request = new JsonObjectRequest(type,
-                url, requestBody, successListener, errorListener);
+                url + ".json", requestBody, successListener, errorListener);
 
         DiscountHunt.requestQueue.add(request);
     }
