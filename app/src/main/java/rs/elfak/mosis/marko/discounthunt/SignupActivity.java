@@ -16,8 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import rs.elfak.mosis.marko.discounthunt.api.tasks.UserSignupTask;
-
 /**
  * A login screen that offers login via email/password.
  */
@@ -26,7 +24,6 @@ public class SignupActivity extends AppCompatActivity {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserSignupTask mAuthTask = null;
 
     // UI references.
     private EditText mEmailView;
@@ -71,9 +68,6 @@ public class SignupActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptSignup() {
-        if (mAuthTask != null) {
-            return;
-        }
 
         // Reset errors.
         mEmailView.setError(null);
@@ -112,8 +106,6 @@ public class SignupActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserSignupTask(email, password);
-            mAuthTask.execute((Void) null);
         }
     }
 
