@@ -1,5 +1,6 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -13,17 +14,24 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
+        attemptMap();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        attemptMap();
+    }
 
     /**
      * Manipulates the map once available.
@@ -42,5 +50,18 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    private void startSigninActivity() {
+        Intent intent = new Intent(this, SigninActivity.class);
+        startActivity(intent);
+    }
+
+    private void attemptMap() {
+        if(DiscountHunt.currentUser == null) {
+            startSigninActivity();
+        } else {
+            mMapFragment.getMapAsync(this);
+        }
     }
 }
