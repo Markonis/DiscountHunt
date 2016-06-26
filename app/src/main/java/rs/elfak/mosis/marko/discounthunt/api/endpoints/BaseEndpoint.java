@@ -15,7 +15,9 @@ public class BaseEndpoint {
     public static final String API_URL = "https://discount-hunt-markomedia.c9users.io";
 
     private String url;
-    public BaseEndpoint(String path) {
+    private String resourceName;
+    public BaseEndpoint(String path, String resourceName) {
+        this.resourceName = resourceName;
         this.url = API_URL + path;
     }
 
@@ -24,13 +26,15 @@ public class BaseEndpoint {
         execute(url + "/" + id, Request.Method.GET, null, successListener, errorListener);
     }
 
-    public void post(JSONObject requestBody, Response.Listener successListener,
+    public void post(JSONObject jsonObject, Response.Listener successListener,
                     Response.ErrorListener errorListener) {
+        JSONObject requestBody = createJsonRequest(jsonObject);
         execute(url, Request.Method.POST, requestBody, successListener, errorListener);
     }
 
-    public void put(int id, JSONObject requestBody, Response.Listener successListener,
+    public void put(int id, JSONObject jsonObject, Response.Listener successListener,
                     Response.ErrorListener errorListener) {
+        JSONObject requestBody = createJsonRequest(jsonObject);
         execute(url + "/" + id, Request.Method.PUT, requestBody, successListener, errorListener);
     }
 
@@ -45,5 +49,14 @@ public class BaseEndpoint {
                 url + ".json", requestBody, successListener, errorListener);
 
         DiscountHunt.requestQueue.add(request);
+    }
+
+    private JSONObject createJsonRequest(JSONObject jsonObject) {
+        try {
+            JSONObject requestJsonObject = new JSONObject();
+            requestJsonObject.put(resourceName, jsonObject);
+            return requestJsonObject;
+        }catch (JSONException ex) { }
+        return null;
     }
 }
