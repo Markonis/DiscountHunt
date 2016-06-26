@@ -2,14 +2,15 @@
     <string name="app_name">Discount  Hunt</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
+    <string name="password">Password</string>
     <string name="signin">Sign in</string>
     <string name="signup">Sign up</string>
-    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="signout">Sign Out</string>
+    <string name="error_invalid_username">This username is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
+    <string name="error_api">There was an error communicating with the API.</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
@@ -26,4 +27,13 @@
     <string name="in">in</string>
     <string name="radius">radius</string>
     <string name="discounts">discounts</string>
+    <string name="username">Username</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="phone">Phone</string>
+    <string name="show_map">Show Map</string>
+    <string name="cart_graphic">Cart Graphic</string>
+    <string name="show_discounts_list">Show Discounts List</string>
+    <string name="add_friend">Add Friend</string>
+
 </resources>
