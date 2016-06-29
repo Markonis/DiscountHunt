@@ -6,6 +6,7 @@
     <string name="signin">Sign in</string>
     <string name="signup">Sign up</string>
     <string name="signout">Sign Out</string>
+    <string name="save">Save</string>
     <string name="error_invalid_username">This username is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -36,5 +37,17 @@
     <string name="show_discounts_list">Show Discounts List</string>
     <string name="add_friend">Add Friend</string>
     <string name="discount_hunt">Discount Hunt</string>
-
+    <string name="title">Title</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="description">Description</string>
+    <string name="price">Price</string>
+    <string name="create_discount">Create Discount</string>
+    <array name="categories">
+        <item>Clothes</item>
+        <item>Shoes</item>
+        <item>Jewelery</item>
+        <item>Electronics</item>
+        <item>Other</item>
+    </array>
+    <string name="error_create_discount">Oops! We could not create your discount.</string>
 </resources>

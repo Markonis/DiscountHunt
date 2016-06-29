@@ -45,10 +45,16 @@ public class BaseEndpoint {
 
     private void execute(String url, int type, JSONObject requestBody, Response.Listener successListener,
                          Response.ErrorListener errorListener) {
-        JsonObjectRequest request = new JsonObjectRequest(type,
-                url + ".json", requestBody, successListener, errorListener);
+        try {
+            if(DiscountHunt.currentSession != null){
+                requestBody.put("token", DiscountHunt.currentSession.getString("token"));
+            }
+            JsonObjectRequest request = new JsonObjectRequest(type,
+                    url + ".json", requestBody, successListener, errorListener);
+            DiscountHunt.requestQueue.add(request);
+        }catch (JSONException ex) {
 
-        DiscountHunt.requestQueue.add(request);
+        }
     }
 
     private JSONObject createJsonRequest(JSONObject jsonObject) {

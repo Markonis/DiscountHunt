@@ -18,27 +18,29 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
         <activity
             android:name=".SigninActivity"
             android:label="@string/title_activity_signin">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SignupActivity"
-            android:label="@string/title_activity_signup">
-        </activity>
+            android:label="@string/title_activity_signup"></activity>
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map" >
-        </activity>
+            android:label="@string/title_activity_map"></activity>
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".FriendDetailActivity" />
         <activity
             android:name=".DiscountsListActivity"
             android:label="@string/title_activity_discounts_list"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CreateDiscountActivity"></activity>
     </application>
+
 </manifest>
