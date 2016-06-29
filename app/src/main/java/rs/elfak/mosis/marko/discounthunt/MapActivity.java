@@ -23,14 +23,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-
-        attemptMap();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        attemptMap();
+        mMapFragment.getMapAsync(this);
     }
 
     /**
@@ -50,18 +43,5 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-
-    private void startSigninActivity() {
-        Intent intent = new Intent(this, SigninActivity.class);
-        startActivity(intent);
-    }
-
-    private void attemptMap() {
-        if(DiscountHunt.currentUser == null) {
-            startSigninActivity();
-        } else {
-            mMapFragment.getMapAsync(this);
-        }
     }
 }

@@ -11,7 +11,6 @@ import org.json.JSONObject;
 public class DiscountHunt extends Application {
     public static Context context;
     public static RequestQueue requestQueue;
-    public static JSONObject currentUser;
     public static JSONObject currentSession;
 
     @Override
