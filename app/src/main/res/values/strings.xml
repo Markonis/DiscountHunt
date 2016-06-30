@@ -50,4 +50,5 @@
         <item>Other</item>
     </array>
     <string name="error_create_discount">Oops! We could not create your discount.</string>
+    <string name="search">Search</string>
 </resources>
