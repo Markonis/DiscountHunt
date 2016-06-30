@@ -6,12 +6,6 @@
     android:fitsSystemWindows="true"
     tools:context="rs.elfak.mosis.marko.discounthunt.MapActivity">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-    </android.support.design.widget.AppBarLayout>
-
     <include layout="@layout/content_map" />
 
     <android.support.design.widget.FloatingActionButton

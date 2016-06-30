@@ -3,15 +3,15 @@
     <item android:id="@+id/show_discounts_list"
         android:title="@string/show_discounts_list"
         android:titleCondensed="@string/show_discounts_list"
-        android:orderInCategory="2" />
+        android:orderInCategory="1" />
 
     <item android:id="@+id/show_add_friend"
         android:title="@string/add_friend"
         android:titleCondensed="@string/add_friend"
-        android:orderInCategory="3" />
+        android:orderInCategory="2" />
 
     <item android:id="@+id/signout"
         android:title="@string/signout"
         android:titleCondensed="@string/signout"
-        android:orderInCategory="4" />
+        android:orderInCategory="3" />
 </menu>
