@@ -30,17 +30,18 @@
         </activity>
         <activity
             android:name=".SignupActivity"
-            android:label="@string/title_activity_signup"></activity>
+            android:label="@string/title_activity_signup" />
         <activity
             android:name=".MapActivity"
-            android:label="@string/title_activity_map"></activity>
+            android:label="@string/title_activity_map" />
         <activity android:name=".AddFriendActivity" />
         <activity android:name=".FriendDetailActivity" />
         <activity
             android:name=".DiscountsListActivity"
             android:label="@string/title_activity_discounts_list"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CreateDiscountActivity"></activity>
+        <activity android:name=".CreateDiscountActivity" />
+        <activity android:name=".DiscountDetailActivity"></activity>
     </application>
 
 </manifest>
