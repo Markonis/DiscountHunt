@@ -10,6 +10,7 @@ import android.util.JsonReader;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ public class DiscountsListActivity extends AppCompatActivity {
     private TextView mCountText, mRadiusText;
     private EditText mQueryText;
     private ListView mList;
+    private JSONArray mDiscounts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,13 @@ public class DiscountsListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_discounts_list);
 
         mList = (ListView) findViewById(R.id.list);
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startDiscountDetailActivity(position);
+            }
+        });
+
         mQueryText = (EditText) findViewById(R.id.query_text);
         mCountText = (TextView) findViewById(R.id.discounts_list_count_text);
         mRadiusText = (TextView) findViewById(R.id.discounts_list_radius_text);
@@ -77,6 +86,15 @@ public class DiscountsListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void startDiscountDetailActivity(int position) {
+        try{
+            String discountStr = mDiscounts.getJSONObject(position).toString();
+            Intent intent = new Intent(getApplicationContext(), DiscountDetailActivity.class);
+            intent.putExtra("discount", discountStr);
+            startActivity(intent);
+        }catch (JSONException ex){}
+    }
+
     private void search() {
         String query = mQueryText.getText().toString();
         JSONObject searchJsonObject = new JSONObject();
@@ -106,9 +124,9 @@ public class DiscountsListActivity extends AppCompatActivity {
         ArrayList<String> items = new ArrayList<>();
         try {
             String result = searchJsonObject.getString("result");
-            JSONArray jsonArray = new JSONArray(result);
-            for(int i = 0; i < jsonArray.length(); i++){
-                JSONObject discountJsonObject = jsonArray.getJSONObject(i);
+            mDiscounts = new JSONArray(result);
+            for(int i = 0; i < mDiscounts.length(); i++){
+                JSONObject discountJsonObject = mDiscounts.getJSONObject(i);
                 String itemStr = discountJsonObject.getString("title");
                 items.add(itemStr);
             }
