@@ -57,6 +57,7 @@ public class SessionActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         showError();
+                        showProgress(false);
                     }
                 }
         );
@@ -105,7 +106,7 @@ public class SessionActivity extends AppCompatActivity {
 
     protected void showError() {
         Toast toast = Toast.makeText(getApplicationContext(),
-                R.string.error_api, Toast.LENGTH_LONG);
+                R.string.error_session, Toast.LENGTH_LONG);
         toast.show();
     }
 }
