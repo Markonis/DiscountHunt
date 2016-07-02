@@ -9,22 +9,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="rs.elfak.mosis.marko.discounthunt.AddFriendActivity">
 
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:id="@+id/signal_logo_image"
-        android:background="@drawable/signal"
-        android:contentDescription="@string/signal_logo"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bluetooth_people_list"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/signal_logo_image" />
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:id="@+id/signal_logo"
+            android:background="@drawable/signal"
+            android:contentDescription="@string/signal_logo"
+            android:layout_margin="20dp"
+            android:layout_gravity="center_horizontal" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/list" />
+    </LinearLayout>
 
 </RelativeLayout>

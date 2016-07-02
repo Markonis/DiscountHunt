@@ -117,6 +117,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.show_discounts_list:
                 startDiscountsListActivity();
                 return true;
+            case R.id.show_add_friend:
+                startAddFriendActivity();
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
@@ -124,6 +127,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void startDiscountsListActivity() {
         Intent intent = new Intent(getApplicationContext(), DiscountsListActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAddFriendActivity() {
+        Intent intent = new Intent(getApplicationContext(), AddFriendActivity.class);
         startActivity(intent);
     }
 
