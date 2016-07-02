@@ -4,6 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
@@ -15,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +43,9 @@ public class SignupActivity extends SessionActivity {
     private EditText mFirstNameView;
     private EditText mLastNameView;
     private EditText mPhoneView;
+    private ImageButton mTakePhoto;
+    private Camera mCamera;
+    private String mPhotoData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,7 @@ public class SignupActivity extends SessionActivity {
         setContentView(R.layout.activity_signup);
         initViews();
 
+        mCamera = new Camera(this);
         mFirstNameView = (EditText) findViewById(R.id.signup_first_name);
         mLastNameView = (EditText) findViewById(R.id.signup_last_name);
         mPhoneView = (EditText) findViewById(R.id.signup_phone);
@@ -53,6 +63,14 @@ public class SignupActivity extends SessionActivity {
             @Override
             public void onClick(View view) {
                 attemptSignup();
+            }
+        });
+
+        mTakePhoto = (ImageButton) findViewById(R.id.take_photo);
+        mTakePhoto.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.takePhoto();
             }
         });
     }
@@ -112,12 +130,22 @@ public class SignupActivity extends SessionActivity {
                 userJsonObject.put("last_name", lastName);
                 userJsonObject.put("phone", phone);
                 userJsonObject.put("user_devices_attributes", userDevicesJsonArray());
+                userJsonObject.put("photo_attributes", photoAttributes());
                 createUser(userJsonObject);
             } catch (Exception ex) {
                 showError();
                 finish();
             }
         }
+    }
+
+    private JSONObject photoAttributes() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("data", mPhotoData);
+            jsonObject.put("file_type", "jpg");
+        }catch (JSONException ex) {}
+        return jsonObject;
     }
 
     private String getBlueToothMAC() throws Exception {
@@ -154,6 +182,17 @@ public class SignupActivity extends SessionActivity {
                     }
                 }
         );
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Camera.CAPTURE_IMAGE_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data"); ;
+                mTakePhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
+                mPhotoData = Camera.encodeToBase64(bitmap);
+            }
+        }
     }
 }
 

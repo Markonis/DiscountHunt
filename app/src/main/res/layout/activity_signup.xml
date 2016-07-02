@@ -33,7 +33,7 @@
             <ImageButton
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:id="@+id/imageButton"
+                android:id="@+id/take_photo"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/profile_photo"
                 android:layout_margin="20dp" />
