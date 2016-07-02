@@ -1,8 +1,12 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+
+import com.android.volley.Response;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,15 +14,19 @@ import org.json.JSONObject;
 public class CurrentLocation {
     private LocationListener mLocationListener;
     private LocationManager mLocationManager;
-    private double lat, lng;
+    private Response.Listener<Location> listener;
+    private LatLng latLng;
 
     public CurrentLocation(LocationManager locationManager){
+        latLng = new LatLng(0, 0);
         mLocationManager = locationManager;
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(android.location.Location location) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
+                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                if(listener != null){
+                    listener.onResponse(location);
+                }
             }
 
             @Override
@@ -44,12 +52,20 @@ public class CurrentLocation {
         }
     }
 
+    public void setListener(Response.Listener<Location> listener) {
+        this.listener = listener;
+    }
+
     public JSONObject toJSONObject() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("lat", lat);
-            jsonObject.put("lng", lng);
+            jsonObject.put("lat", latLng.latitude);
+            jsonObject.put("lng", latLng.longitude);
         }catch (JSONException ex) {}
         return jsonObject;
+    }
+
+    public LatLng getLatLng() {
+        return latLng;
     }
 }
