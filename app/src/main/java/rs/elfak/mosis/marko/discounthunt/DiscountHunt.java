@@ -2,13 +2,14 @@ package rs.elfak.mosis.marko.discounthunt;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
-public class DiscountHunt extends Application {
+public class DiscountHunt extends MultiDexApplication {
     public static Context context;
     public static RequestQueue requestQueue;
     public static JSONObject currentSession;
