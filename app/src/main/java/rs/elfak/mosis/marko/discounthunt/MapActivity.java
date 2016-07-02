@@ -1,6 +1,9 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -12,23 +15,43 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountSearchEndpoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private SupportMapFragment mMapFragment;
     private FloatingActionButton fab;
+    private CurrentLocation mCurrentLocation;
+    private TimerTask refreshTimerTask;
+    private Timer refreshTimer;
+    private JSONArray mDiscounts;
+    private ArrayList<Marker> discountMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        discountMarkers = new ArrayList<>();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -41,6 +64,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 startCreateDiscountActivity();
             }
         });
+
+        // Current location
+        mCurrentLocation = new CurrentLocation((LocationManager) getSystemService(Context.LOCATION_SERVICE));
+        mCurrentLocation.setListener(new Response.Listener<Location>() {
+            @Override
+            public void onResponse(Location location) {
+                moveCameraToLocation(location);
+            }
+        });
+
+        // Discounts refresh timer
+        refreshTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    JSONObject searchJsonObject = new JSONObject();
+                    searchJsonObject.put("query", "");
+                    DiscountSearchEndpoint endpoint = new DiscountSearchEndpoint();
+                    endpoint.post(searchJsonObject,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    updateDiscountMarkers(response);
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+
+                                }
+                            }
+                    );
+                }catch (JSONException ex) {}
+            }
+        };
+        refreshTimer = new Timer();
+        refreshTimer.schedule(refreshTimerTask, 1000, 10000);
     }
 
     @Override
@@ -67,6 +127,50 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startActivity(intent);
     }
 
+    private void moveCameraToLocation(Location location) {
+        if(mMap != null){
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
+    }
+
+    private void updateDiscountMarkers(JSONObject searchJsonObject) {
+        try {
+            String result = searchJsonObject.getString("result");
+            mDiscounts = new JSONArray(result);
+
+            for(Marker marker : discountMarkers){
+                marker.remove();
+            }
+
+            if(mMap != null) {
+                for (int i = 0; i < mDiscounts.length(); i++) {
+                    MarkerOptions markerOptions = discountMarkerOptions(mDiscounts.getJSONObject(i));
+                    if(markerOptions != null) {
+                        discountMarkers.add(mMap.addMarker(
+                                discountMarkerOptions(mDiscounts.getJSONObject(i))));
+                    }
+                }
+            }
+
+        }catch (JSONException ex) {
+
+        }
+    }
+
+    private MarkerOptions discountMarkerOptions(JSONObject discountJsonObject) {
+        try {
+            MarkerOptions markerOptions = new MarkerOptions();
+            JSONObject locationJsonObject = discountJsonObject.getJSONObject("location");
+            markerOptions.position(new LatLng(
+                    locationJsonObject.getDouble("lat"),
+                    locationJsonObject.getDouble("lng")));
+            return markerOptions;
+        }catch (JSONException ex) {
+            return null;
+        }
+    }
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -79,11 +183,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng latLng = mCurrentLocation.getLatLng();
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     private void startCreateDiscountActivity() {
