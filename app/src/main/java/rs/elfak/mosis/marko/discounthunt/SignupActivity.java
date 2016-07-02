@@ -3,6 +3,7 @@ package rs.elfak.mosis.marko.discounthunt;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -109,11 +111,30 @@ public class SignupActivity extends SessionActivity {
                 userJsonObject.put("first_name", firstName);
                 userJsonObject.put("last_name", lastName);
                 userJsonObject.put("phone", phone);
+                userJsonObject.put("user_devices_attributes", userDevicesJsonArray());
                 createUser(userJsonObject);
-            }catch (JSONException ex) {
+            } catch (Exception ex) {
                 showError();
+                finish();
             }
         }
+    }
+
+    private String getBlueToothMAC() throws Exception {
+        BluetoothAdapter mAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mAdapter != null) {
+            return mAdapter.getAddress();
+        } else {
+            throw new Exception("BlueTooth is not supported!");
+        }
+    }
+
+    private JSONArray userDevicesJsonArray() throws Exception {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject deviceJsonObject = new JSONObject();
+        deviceJsonObject.put("hardware_uuid", getBlueToothMAC());
+        jsonArray.put(deviceJsonObject);
+        return jsonArray;
     }
 
     private void createUser(final JSONObject userJsonObject) {
