@@ -88,9 +88,9 @@ public class DiscountsListActivity extends AppCompatActivity {
 
     private void startDiscountDetailActivity(int position) {
         try{
-            String discountStr = mDiscounts.getJSONObject(position).toString();
+            int id = mDiscounts.getJSONObject(position).getInt("id");
             Intent intent = new Intent(getApplicationContext(), DiscountDetailActivity.class);
-            intent.putExtra("discount", discountStr);
+            intent.putExtra("id", id);
             startActivity(intent);
         }catch (JSONException ex){}
     }
