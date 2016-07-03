@@ -71,7 +71,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
     private void updateView() {
         try {
-            if(discountJsonObject.has("photo")){
+            if(!discountJsonObject.isNull("photo")){
                 JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
                 Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
                 mPhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
@@ -83,7 +83,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
             JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
             mAuthor.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
 
-            if(userJsonObject.has("photo")){
+            if(!userJsonObject.isNull("photo")){
                 JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
                 Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
                 mAuthorPhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
