@@ -36,6 +36,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountSearchEndpoint;
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserSearchEndpoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -46,13 +47,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private TimerTask refreshTimerTask;
     private Timer refreshTimer;
     private JSONArray mDiscounts;
-    private ArrayList<Marker> discountMarkers;
+    private JSONArray mUsers;
+    private ArrayList<Marker> discountMarkers, userMarkers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         discountMarkers = new ArrayList<>();
+        userMarkers = new ArrayList<>();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -76,29 +79,52 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
-        // Discounts refresh timer
+        startRefreshTimer();
+    }
+
+    private void startRefreshTimer() {
         refreshTimerTask = new TimerTask() {
             @Override
             public void run() {
-                try {
-                    JSONObject searchJsonObject = new JSONObject();
-                    searchJsonObject.put("query", "");
-                    DiscountSearchEndpoint endpoint = new DiscountSearchEndpoint();
-                    endpoint.post(searchJsonObject,
-                            new Response.Listener<JSONObject>() {
-                                @Override
-                                public void onResponse(JSONObject response) {
-                                    updateDiscountMarkers(response);
-                                }
-                            },
-                            new Response.ErrorListener() {
-                                @Override
-                                public void onErrorResponse(VolleyError error) {
-
-                                }
+            try {
+                JSONObject searchJsonObject = new JSONObject();
+                searchJsonObject.put("query", "");
+                DiscountSearchEndpoint discountSearchEndpoint = new DiscountSearchEndpoint();
+                discountSearchEndpoint.post(searchJsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                            updateDiscountMarkers(response);
                             }
-                    );
-                }catch (JSONException ex) {}
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }
+                );
+
+                JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
+                searchJsonObject = new JSONObject();
+                searchJsonObject.put("friends_with", userJsonObject.getInt("id"));
+                UserSearchEndpoint userSearchEndpoint = new UserSearchEndpoint();
+                userSearchEndpoint.post(searchJsonObject,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                updateUserMarkers(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        }
+                );
+
+            }catch (JSONException ex) {}
             }
         };
         refreshTimer = new Timer();
@@ -127,16 +153,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void startDiscountsListActivity() {
-        Intent intent = new Intent(getApplicationContext(), DiscountsListActivity.class);
-        startActivity(intent);
-    }
-
-    private void startAddFriendActivity() {
-        Intent intent = new Intent(getApplicationContext(), AddFriendActivity.class);
-        startActivity(intent);
-    }
-
     private void moveCameraToLocation(Location location) {
         if(mMap != null){
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -157,15 +173,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 for (int i = 0; i < mDiscounts.length(); i++) {
                     MarkerOptions markerOptions = discountMarkerOptions(mDiscounts.getJSONObject(i));
                     if(markerOptions != null) {
-                        discountMarkers.add(mMap.addMarker(
-                                discountMarkerOptions(mDiscounts.getJSONObject(i))));
+                        discountMarkers.add(mMap.addMarker(markerOptions));
                     }
                 }
             }
 
-        }catch (JSONException ex) {
-
-        }
+        }catch (JSONException ex) {}
     }
 
     private MarkerOptions discountMarkerOptions(JSONObject discountJsonObject) {
@@ -186,15 +199,45 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    private void updateUserMarkers(JSONObject searchJsonObject) {
+        try {
+            String result = searchJsonObject.getString("result");
+            mUsers = new JSONArray(result);
+
+            for(Marker marker : userMarkers){
+                marker.remove();
+            }
+
+            if(mMap != null) {
+                for (int i = 0; i < mUsers.length(); i++) {
+                    MarkerOptions markerOptions = userMarkerOptions(mUsers.getJSONObject(i));
+                    if(markerOptions != null) {
+                        userMarkers.add(mMap.addMarker(markerOptions));
+                    }
+                }
+            }
+
+        }catch (JSONException ex) {}
+    }
+
+    private MarkerOptions userMarkerOptions(JSONObject userJsonObject) {
+        try {
+            MarkerOptions markerOptions = new MarkerOptions();
+            JSONObject locationJsonObject = userJsonObject.getJSONObject("location");
+            markerOptions.position(new LatLng(
+                    locationJsonObject.getDouble("lat"),
+                    locationJsonObject.getDouble("lng")));
+            if(userJsonObject.has("photo")) {
+                JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+            }
+            return markerOptions;
+        }catch (JSONException ex) {
+            return null;
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -203,8 +246,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshTimer.cancel();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startRefreshTimer();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        refreshTimer.purge();
+    }
+
     private void startCreateDiscountActivity() {
         Intent intent = new Intent(getApplicationContext(), CreateDiscountActivity.class);
+        startActivity(intent);
+    }
+
+    private void startDiscountsListActivity() {
+        Intent intent = new Intent(getApplicationContext(), DiscountsListActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAddFriendActivity() {
+        Intent intent = new Intent(getApplicationContext(), AddFriendActivity.class);
         startActivity(intent);
     }
 }
