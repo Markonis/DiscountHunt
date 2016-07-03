@@ -130,7 +130,9 @@ public class SignupActivity extends SessionActivity {
                 userJsonObject.put("last_name", lastName);
                 userJsonObject.put("phone", phone);
                 userJsonObject.put("user_devices_attributes", userDevicesJsonArray());
-                userJsonObject.put("photo_attributes", photoAttributes());
+                if(mPhotoData != null) {
+                    userJsonObject.put("photo_attributes", photoAttributes());
+                }
                 createUser(userJsonObject);
             } catch (Exception ex) {
                 showError();
