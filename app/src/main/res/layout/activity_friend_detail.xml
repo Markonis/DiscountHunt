@@ -9,85 +9,59 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="rs.elfak.mosis.marko.discounthunt.FriendDetailActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="John Appleseed"
-        android:id="@+id/friend_name_text"
-        android:layout_alignTop="@+id/friend_photo_image"
-        android:layout_toRightOf="@+id/friend_photo_image"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="10dp" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:id="@+id/friend_photo_image"
-        android:contentDescription="@string/friends_photo"
-        android:background="@drawable/profile_photo"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="10dp"
-        android:layout_marginRight="10dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="+ 381 60 11 22 333"
-        android:id="@+id/friend_phone_text"
-        android:layout_below="@+id/friend_name_text"
-        android:layout_toRightOf="@+id/friend_photo_image"
-        android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:id="@+id/photo"
+                android:contentDescription="@string/friends_photo"
+                android:background="@drawable/profile_photo"
+                android:layout_marginBottom="0dp"
+                android:layout_marginRight="0dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/discounts_found"
-        android:layout_below="@+id/friend_photo_image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:id="@+id/friend_discounts_label"
-        android:layout_marginBottom="10dp" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp">
 
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/friend_discounts_list"
-        android:layout_below="@+id/friend_discounts_label"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="John Appleseed"
+                    android:id="@+id/name"
+                    android:layout_marginBottom="10dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/rank"
-        android:layout_below="@+id/friend_phone_text"
-        android:layout_toRightOf="@+id/friend_photo_image"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/friend_rank_label" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="+ 381 60 11 22 333"
+                    android:id="@+id/phone"
+                    android:layout_marginBottom="10dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="12"
-        android:id="@+id/friend_rank_text"
-        android:layout_alignTop="@+id/friend_rank_label"
-        android:layout_toRightOf="@+id/friend_rank_label"
-        android:layout_marginLeft="10dp"
-        android:layout_alignRight="@+id/friend_discounts_label"
-        android:layout_alignEnd="@+id/friend_discounts_label" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/rank"
+                    android:id="@+id/rank" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>
