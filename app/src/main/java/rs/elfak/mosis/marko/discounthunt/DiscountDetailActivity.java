@@ -1,11 +1,14 @@
 package rs.elfak.mosis.marko.discounthunt;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -21,6 +24,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
     private JSONObject discountJsonObject;
     private TextView mTitle, mDescription, mVotes, mAuthor;
     private ImageButton mVoteUp;
+    private ImageView mPhoto, mAuthorPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +35,8 @@ public class DiscountDetailActivity extends AppCompatActivity {
         mDescription = (TextView) findViewById(R.id.description);
         mVotes = (TextView) findViewById(R.id.votes);
         mAuthor = (TextView) findViewById(R.id.author);
-
+        mPhoto = (ImageView) findViewById(R.id.photo);
+        mAuthorPhoto = (ImageView) findViewById(R.id.author_photo);
         mVoteUp = (ImageButton) findViewById(R.id.vote_up);
         mVoteUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,11 +59,24 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
     private void updateView() {
         try {
+            if(discountJsonObject.has("photo")){
+                JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                mPhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
+            }
+
             mTitle.setText(discountJsonObject.getString("title") + " - " + "$" + discountJsonObject.getDouble("price"));
             mDescription.setText(discountJsonObject.getString("description"));
             mVotes.setText(String.valueOf(discountJsonObject.getInt("votes")));
             JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
             mAuthor.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
+
+            if(userJsonObject.has("photo")){
+                JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                mAuthorPhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
+            }
+
         }catch (JSONException ex){}
     }
 

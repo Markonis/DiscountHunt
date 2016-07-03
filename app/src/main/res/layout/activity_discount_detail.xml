@@ -88,10 +88,11 @@
             <ImageView
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:id="@+id/imageView"
+                android:id="@+id/author_photo"
                 android:layout_margin="10dp"
                 android:layout_gravity="center_vertical"
-                android:background="@drawable/profile_photo" />
+                android:background="@drawable/profile_photo"
+                android:contentDescription="@string/author_photo" />
 
             <TextView
                 android:layout_width="wrap_content"

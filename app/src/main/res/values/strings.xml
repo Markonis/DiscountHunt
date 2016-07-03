@@ -55,4 +55,5 @@
     <string name="vote_up">Vote Up</string>
     <string name="vote_down">Vote Down</string>
     <string name="author">Author</string>
+    <string name="author_photo">Author\'s Photo</string>
 </resources>
