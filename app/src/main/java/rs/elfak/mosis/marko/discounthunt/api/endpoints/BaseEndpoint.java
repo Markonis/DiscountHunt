@@ -21,43 +21,47 @@ public class BaseEndpoint {
         this.url = API_URL + path;
     }
 
-    public void get(int id, Response.Listener successListener,
-                    Response.ErrorListener errorListener) {
-        execute(url + "/" + id, Request.Method.GET, null, successListener, errorListener);
+    public void get(int id, Response.Listener successListener, Response.ErrorListener errorListener) {
+        execute(url + "/" + id + ".json", Request.Method.GET, null, successListener, errorListener);
     }
 
     public void post(JSONObject jsonObject, Response.Listener successListener,
                     Response.ErrorListener errorListener) {
-        JSONObject requestBody = createJsonRequest(jsonObject);
-        execute(url, Request.Method.POST, requestBody, successListener, errorListener);
+        JSONObject requestBody = createResourceRequest(jsonObject);
+        execute(url + ".json", Request.Method.POST, requestBody, successListener, errorListener);
     }
 
     public void put(int id, JSONObject jsonObject, Response.Listener successListener,
                     Response.ErrorListener errorListener) {
-        JSONObject requestBody = createJsonRequest(jsonObject);
-        execute(url + "/" + id, Request.Method.PUT, requestBody, successListener, errorListener);
+        JSONObject requestBody = createResourceRequest(jsonObject);
+        execute(url + "/" + id + ".json", Request.Method.PUT, requestBody, successListener, errorListener);
     }
 
-    public void delete(int id, JSONObject requestBody, Response.Listener successListener,
-                    Response.ErrorListener errorListener) {
-        execute(url + "/" + id,Request.Method.DELETE, requestBody, successListener, errorListener);
+    public void delete(int id, Response.Listener successListener,Response.ErrorListener errorListener) {
+        execute(url + "/" + id, Request.Method.DELETE, null, successListener, errorListener);
     }
 
-    private void execute(String url, int type, JSONObject requestBody, Response.Listener successListener,
-                         Response.ErrorListener errorListener) {
+    private void execute(String url, int type, JSONObject requestBody,
+                         Response.Listener successListener,Response.ErrorListener errorListener) {
+        String finalUrl = url;
+        boolean hasSession = DiscountHunt.currentSession != null;
         try {
-            if(DiscountHunt.currentSession != null){
+            // Put auth token into the request
+            if(requestBody != null && hasSession){
                 requestBody.put("token", DiscountHunt.currentSession.getString("token"));
+            }else if(hasSession){
+                finalUrl = finalUrl + "?token=" + DiscountHunt.currentSession.getString("token");
             }
-            JsonObjectRequest request = new JsonObjectRequest(type,
-                    url + ".json", requestBody, successListener, errorListener);
-            DiscountHunt.requestQueue.add(request);
-        }catch (JSONException ex) {
 
-        }
+            // Create request
+            JsonObjectRequest request = new JsonObjectRequest(type, finalUrl, requestBody,
+                    successListener, errorListener);
+            // Add request to queue
+            DiscountHunt.requestQueue.add(request);
+        }catch (JSONException ex) {}
     }
 
-    private JSONObject createJsonRequest(JSONObject jsonObject) {
+    private JSONObject createResourceRequest(JSONObject jsonObject) {
         try {
             JSONObject requestJsonObject = new JSONObject();
             requestJsonObject.put(resourceName, jsonObject);
