@@ -35,10 +35,12 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountSearchEndpoint;
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserSearchEndpoint;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private SupportMapFragment mMapFragment;
@@ -46,8 +48,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private CurrentLocation mCurrentLocation;
     private TimerTask refreshTimerTask;
     private Timer refreshTimer;
-    private JSONArray mDiscounts;
-    private JSONArray mUsers;
+    private ArrayList<JSONObject> mDiscounts, mUsers;
     private ArrayList<Marker> discountMarkers, userMarkers;
 
     @Override
@@ -56,6 +57,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_map);
         discountMarkers = new ArrayList<>();
         userMarkers = new ArrayList<>();
+        mDiscounts = new ArrayList<>();
+        mUsers = new ArrayList<>();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mMapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -86,49 +89,227 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         refreshTimerTask = new TimerTask() {
             @Override
             public void run() {
-            try {
-                JSONObject searchJsonObject = new JSONObject();
-                searchJsonObject.put("query", "");
-                DiscountSearchEndpoint discountSearchEndpoint = new DiscountSearchEndpoint();
-                discountSearchEndpoint.post(searchJsonObject,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                            updateDiscountMarkers(response);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-
-                            }
-                        }
-                );
-
-                JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
-                searchJsonObject = new JSONObject();
-                searchJsonObject.put("friends_with", userJsonObject.getInt("id"));
-                UserSearchEndpoint userSearchEndpoint = new UserSearchEndpoint();
-                userSearchEndpoint.post(searchJsonObject,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                updateUserMarkers(response);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-
-                            }
-                        }
-                );
-
-            }catch (JSONException ex) {}
+                searchDiscounts();
+                searchUsers();
             }
         };
         refreshTimer = new Timer();
         refreshTimer.schedule(refreshTimerTask, 1000, 10000);
+    }
+
+    private void searchDiscounts() {
+        try {
+            JSONObject searchJsonObject = new JSONObject();
+            searchJsonObject.put("query", "");
+            DiscountSearchEndpoint discountSearchEndpoint = new DiscountSearchEndpoint();
+            discountSearchEndpoint.post(searchJsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            loadDiscounts(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    });
+        }catch (JSONException ex){}
+    }
+
+    private void loadDiscounts(JSONObject searchJsonObject) {
+        try {
+            String resultStr = searchJsonObject.getString("result");
+            JSONArray resultJsonArray = new JSONArray(resultStr);
+            for(int i = 0; i < resultJsonArray.length(); i++){
+                loadDiscount(resultJsonArray.getJSONObject(i).getInt("id"));
+            }
+        }catch (JSONException ex){}
+    }
+
+    private void loadDiscount(int id) {
+        DiscountEndpoint endpoint = new DiscountEndpoint();
+        endpoint.get(id,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        MarkerOptions markerOptions = discountMarkerOptions(response);
+                        if(markerOptions != null) {
+                            clearDiscount(response);
+                            mDiscounts.add(response);
+                            discountMarkers.add(mMap.addMarker(markerOptions));
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+    }
+
+    private void clearDiscount(JSONObject discountJsonObject) {
+        try {
+            int index = -1;
+            for(int i = 0; i < mDiscounts.size(); i++){
+                if(mDiscounts.get(i).getInt("id") == discountJsonObject.getInt("id")){
+                    index = i;
+                }
+            }
+            if(index > -1) {
+                mDiscounts.remove(index);
+                discountMarkers.get(index).remove();
+                discountMarkers.remove(index);
+            }
+        }catch (JSONException ex){}
+    }
+
+    private MarkerOptions discountMarkerOptions(JSONObject discountJsonObject) {
+        try {
+            MarkerOptions markerOptions = new MarkerOptions();
+            JSONObject locationJsonObject = discountJsonObject.getJSONObject("location");
+            markerOptions.title(discountJsonObject.getString("title"));
+            markerOptions.position(new LatLng(
+                    locationJsonObject.getDouble("lat"),
+                    locationJsonObject.getDouble("lng")));
+            if(discountJsonObject.has("photo")) {
+                JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+            }
+            return markerOptions;
+        }catch (JSONException ex) {
+            return null;
+        }
+    }
+
+    private void searchUsers() {
+        try {
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
+            JSONObject searchJsonObject = new JSONObject();
+            searchJsonObject.put("friends_with", userJsonObject.getInt("id"));
+            UserSearchEndpoint userSearchEndpoint = new UserSearchEndpoint();
+            userSearchEndpoint.post(searchJsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            loadUsers(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {}
+                    });
+        }catch (JSONException ex) {}
+    }
+
+    private void loadUsers(JSONObject searchJsonObject) {
+        try {
+            String resultStr = searchJsonObject.getString("result");
+            JSONArray resultJsonArray = new JSONArray(resultStr);
+            for(int i = 0; i < resultJsonArray.length(); i++){
+                loadUser(resultJsonArray.getJSONObject(i).getInt("id"));
+            }
+        }catch (JSONException ex){}
+    }
+
+    private void loadUser(int id) {
+        UserEndpoint endpoint = new UserEndpoint();
+        endpoint.get(id,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        MarkerOptions markerOptions = userMarkerOptions(response);
+                        if(markerOptions != null) {
+                            clearUser(response);
+                            mUsers.add(response);
+                            userMarkers.add(mMap.addMarker(markerOptions));
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+    }
+
+    private void clearUser(JSONObject userJsonObject) {
+        try {
+            int index = -1;
+            for(int i = 0; i < mUsers.size(); i++){
+                if(mUsers.get(i).getInt("id") == userJsonObject.getInt("id")){
+                    index = i;
+                }
+            }
+            if(index > -1) {
+                mUsers.remove(index);
+                userMarkers.get(index).remove();
+                userMarkers.remove(index);
+            }
+        }catch (JSONException ex){}
+    }
+
+    private MarkerOptions userMarkerOptions(JSONObject userJsonObject) {
+        try {
+            MarkerOptions markerOptions = new MarkerOptions();
+            JSONObject locationJsonObject = userJsonObject.getJSONObject("location");
+            markerOptions.title(userJsonObject.getString("first_name"));
+            markerOptions.position(new LatLng(
+                    locationJsonObject.getDouble("lat"),
+                    locationJsonObject.getDouble("lng")));
+            if(userJsonObject.has("photo")) {
+                JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+            }
+            return markerOptions;
+        }catch (JSONException ex) {
+            return null;
+        }
+    }
+
+    private void startCreateDiscountActivity() {
+        Intent intent = new Intent(getApplicationContext(), CreateDiscountActivity.class);
+        startActivity(intent);
+    }
+
+    private void startDiscountsListActivity() {
+        Intent intent = new Intent(getApplicationContext(), DiscountsListActivity.class);
+        startActivity(intent);
+    }
+
+    private void startAddFriendActivity() {
+        Intent intent = new Intent(getApplicationContext(), AddFriendActivity.class);
+        startActivity(intent);
+    }
+
+    private void startDiscountDetailActivity(int index) {
+        try {
+            JSONObject discountJsonObject = mDiscounts.get(index);
+            Intent intent = new Intent(getApplicationContext(), DiscountDetailActivity.class);
+            intent.putExtra("id", discountJsonObject.getInt("id"));
+            startActivity(intent);
+        }catch (JSONException ex) {}
+    }
+
+    private void startFriendDetailActivity(int index) {
+        try {
+            JSONObject userJsonObject = mUsers.get(index);
+            Intent intent = new Intent(getApplicationContext(), FriendDetailActivity.class);
+            intent.putExtra("id", userJsonObject.getInt("id"));
+            startActivity(intent);
+        }catch (JSONException ex) {}
+    }
+
+    private void moveCameraToLocation(Location location) {
+        if(mMap != null){
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        }
     }
 
     @Override
@@ -153,97 +334,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void moveCameraToLocation(Location location) {
-        if(mMap != null){
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        }
-    }
-
-    private void updateDiscountMarkers(JSONObject searchJsonObject) {
-        try {
-            String result = searchJsonObject.getString("result");
-            mDiscounts = new JSONArray(result);
-
-            for(Marker marker : discountMarkers){
-                marker.remove();
-            }
-
-            if(mMap != null) {
-                for (int i = 0; i < mDiscounts.length(); i++) {
-                    MarkerOptions markerOptions = discountMarkerOptions(mDiscounts.getJSONObject(i));
-                    if(markerOptions != null) {
-                        discountMarkers.add(mMap.addMarker(markerOptions));
-                    }
-                }
-            }
-
-        }catch (JSONException ex) {}
-    }
-
-    private MarkerOptions discountMarkerOptions(JSONObject discountJsonObject) {
-        try {
-            MarkerOptions markerOptions = new MarkerOptions();
-            JSONObject locationJsonObject = discountJsonObject.getJSONObject("location");
-            markerOptions.position(new LatLng(
-                    locationJsonObject.getDouble("lat"),
-                    locationJsonObject.getDouble("lng")));
-            if(discountJsonObject.has("photo")) {
-                JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
-                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-            }
-            return markerOptions;
-        }catch (JSONException ex) {
-            return null;
-        }
-    }
-
-    private void updateUserMarkers(JSONObject searchJsonObject) {
-        try {
-            String result = searchJsonObject.getString("result");
-            mUsers = new JSONArray(result);
-
-            for(Marker marker : userMarkers){
-                marker.remove();
-            }
-
-            if(mMap != null) {
-                for (int i = 0; i < mUsers.length(); i++) {
-                    MarkerOptions markerOptions = userMarkerOptions(mUsers.getJSONObject(i));
-                    if(markerOptions != null) {
-                        userMarkers.add(mMap.addMarker(markerOptions));
-                    }
-                }
-            }
-
-        }catch (JSONException ex) {}
-    }
-
-    private MarkerOptions userMarkerOptions(JSONObject userJsonObject) {
-        try {
-            MarkerOptions markerOptions = new MarkerOptions();
-            JSONObject locationJsonObject = userJsonObject.getJSONObject("location");
-            markerOptions.position(new LatLng(
-                    locationJsonObject.getDouble("lat"),
-                    locationJsonObject.getDouble("lng")));
-            if(userJsonObject.has("photo")) {
-                JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
-                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
-                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
-            }
-            return markerOptions;
-        }catch (JSONException ex) {
-            return null;
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
         LatLng latLng = mCurrentLocation.getLatLng();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.setOnMarkerClickListener(this);
     }
 
     @Override
@@ -264,18 +361,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         refreshTimer.purge();
     }
 
-    private void startCreateDiscountActivity() {
-        Intent intent = new Intent(getApplicationContext(), CreateDiscountActivity.class);
-        startActivity(intent);
-    }
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        for(int i = 0; i < discountMarkers.size(); i++){
+            if(discountMarkers.get(i).equals(marker)){
+                startDiscountDetailActivity(i);
+                return true;
+            }
+        }
 
-    private void startDiscountsListActivity() {
-        Intent intent = new Intent(getApplicationContext(), DiscountsListActivity.class);
-        startActivity(intent);
-    }
+        for(int i = 0; i < userMarkers.size(); i++){
+            if(userMarkers.get(i).equals(marker)) {
+                startFriendDetailActivity(i);
+                return true;
+            }
+        }
 
-    private void startAddFriendActivity() {
-        Intent intent = new Intent(getApplicationContext(), AddFriendActivity.class);
-        startActivity(intent);
+        return false;
     }
 }
