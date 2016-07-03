@@ -50,11 +50,23 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
     private void loadData() {
         Bundle extras = getIntent().getExtras();
-        String discountStr = extras.getString("discount");
-        try {
-            discountJsonObject = new JSONObject(discountStr);
-            updateView();
-        }catch (JSONException ex){}
+        int id = extras.getInt("id");
+        DiscountEndpoint endpoint = new DiscountEndpoint();
+        endpoint.get(id,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        discountJsonObject = response;
+                        updateView();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
     }
 
     private void updateView() {
