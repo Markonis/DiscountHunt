@@ -1,6 +1,9 @@
 package rs.elfak.mosis.marko.discounthunt;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -25,21 +29,32 @@ public class CreateDiscountActivity extends AppCompatActivity {
     private EditText mTitle, mDescription, mPrice;
     private Spinner mCategory;
     private CurrentLocation mCurrentLocation;
+    private Camera mCamera;
+    private ImageButton mTakePhoto;
+    private String mPhotoData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_discount);
+        initCategory();
+        mCamera = new Camera(this);
         mCurrentLocation = new CurrentLocation((LocationManager) getSystemService(Context.LOCATION_SERVICE));
         mCreateButton = (Button) findViewById(R.id.create_discount);
         mTitle = (EditText) findViewById(R.id.title);
         mDescription = (EditText) findViewById(R.id.description);
         mPrice = (EditText) findViewById(R.id.price);
-        initCategory();
         mCreateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 createDiscount();
+            }
+        });
+        mTakePhoto = (ImageButton) findViewById(R.id.take_photo);
+        mTakePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.takePhoto();
             }
         });
     }
@@ -62,7 +77,9 @@ public class CreateDiscountActivity extends AppCompatActivity {
             discountJsonObject.put("price", mPrice.getText().toString());
             discountJsonObject.put("category", mCategory.getSelectedItem().toString());
             discountJsonObject.put("location_attributes", mCurrentLocation.toJSONObject());
-
+            if(mPhotoData != null) {
+                discountJsonObject.put("photo_attributes", photoAttributes());
+            }
             DiscountEndpoint discountEndpoint = new DiscountEndpoint();
             discountEndpoint.post(discountJsonObject,
                     new Response.Listener<JSONObject>() {
@@ -87,5 +104,25 @@ public class CreateDiscountActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.error_create_discount, Toast.LENGTH_LONG);
         toast.show();
+    }
+
+    private JSONObject photoAttributes() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("data", mPhotoData);
+            jsonObject.put("file_type", "jpg");
+        }catch (JSONException ex) {}
+        return jsonObject;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Camera.CAPTURE_IMAGE_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data"); ;
+                mTakePhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
+                mPhotoData = Camera.encodeToBase64(bitmap);
+            }
+        }
     }
 }
