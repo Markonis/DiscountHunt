@@ -2,6 +2,7 @@ package rs.elfak.mosis.marko.discounthunt;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -173,6 +175,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             markerOptions.position(new LatLng(
                     locationJsonObject.getDouble("lat"),
                     locationJsonObject.getDouble("lng")));
+            if(discountJsonObject.has("photo")) {
+                JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
+                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+            }
             return markerOptions;
         }catch (JSONException ex) {
             return null;
