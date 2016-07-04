@@ -17,12 +17,14 @@ import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.NumberFormat;
+
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountEndpoint;
 
 public class DiscountDetailActivity extends AppCompatActivity {
 
     private JSONObject discountJsonObject;
-    private TextView mTitle, mDescription, mVotes, mAuthor;
+    private TextView mTitle, mDescription, mVotes, mAuthor, mPrice;
     private ImageButton mVoteUp;
     private ImageView mPhoto, mAuthorPhoto;
 
@@ -33,6 +35,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
         mTitle = (TextView) findViewById(R.id.title);
         mDescription = (TextView) findViewById(R.id.description);
+        mPrice = (TextView) findViewById(R.id.price);
         mVotes = (TextView) findViewById(R.id.votes);
         mAuthor = (TextView) findViewById(R.id.author);
         mPhoto = (ImageView) findViewById(R.id.photo);
@@ -77,9 +80,11 @@ public class DiscountDetailActivity extends AppCompatActivity {
                 mPhoto.setBackground(new BitmapDrawable(getResources(),bitmap));
             }
 
-            mTitle.setText(discountJsonObject.getString("title") + " - " + "$" + discountJsonObject.getDouble("price"));
+            mTitle.setText(discountJsonObject.getString("title"));
             mDescription.setText(discountJsonObject.getString("description"));
             mVotes.setText(String.valueOf(discountJsonObject.getInt("votes")));
+            NumberFormat currency = NumberFormat.getCurrencyInstance();
+            mPrice.setText(currency.format(discountJsonObject.getDouble("price")));
             JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
             mAuthor.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
 

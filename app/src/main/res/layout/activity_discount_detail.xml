@@ -14,52 +14,83 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="280dp"
-            android:layout_height="210dp"
-            android:id="@+id/photo"
-            android:background="@drawable/discount_photo"
-            android:layout_gravity="center_horizontal"
-            android:contentDescription="@string/discount_photo"
-            android:layout_margin="20dp" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical|center_horizontal">
+            android:layout_marginBottom="20dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Discount Title - $4.95"
-                android:id="@+id/title"
-                android:layout_gravity="center_vertical"
-                android:layout_margin="10dp" />
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:id="@+id/photo"
+                android:background="@drawable/discount_photo"
+                android:contentDescription="@string/discount_photo"
+                android:layout_margin="0dp" />
 
-            <ImageButton
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:id="@+id/vote_up"
-                android:contentDescription="@string/vote_up"
-                android:background="@drawable/ic_thumb_up_black_48dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="2dp" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="53"
-                android:id="@+id/votes"
-                android:layout_gravity="center_vertical"
-                android:contextClickable="false"
-                android:layout_marginRight="10dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Discount Title"
+                    android:id="@+id/title"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="10dp" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/votes"
+                        android:id="@+id/textView2"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="53"
+                        android:id="@+id/votes"
+                        android:layout_gravity="center_vertical"
+                        android:contextClickable="false"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="10dp" />
+
+                    <ImageButton
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/vote_up"
+                        android:contentDescription="@string/vote_up"
+                        android:background="@drawable/ic_thumb_up_black_48dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="2dp" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="$40.00"
+                    android:id="@+id/price"
+                    android:layout_marginBottom="10dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -70,7 +101,7 @@
             android:text="Some cool description of the discount at hand. For example: this is a really nice shirt!"
             android:id="@+id/description"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="20dp"
             android:freezesText="false" />
 
         <TextView

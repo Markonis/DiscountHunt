@@ -24,9 +24,7 @@
                 android:layout_height="160dp"
                 android:id="@+id/photo"
                 android:contentDescription="@string/friends_photo"
-                android:background="@drawable/profile_photo"
-                android:layout_marginBottom="0dp"
-                android:layout_marginRight="0dp" />
+                android:background="@drawable/profile_photo" />
 
             <LinearLayout
                 android:orientation="vertical"

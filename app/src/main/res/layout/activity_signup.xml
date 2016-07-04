@@ -31,8 +31,8 @@
             android:orientation="vertical">
 
             <ImageButton
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
                 android:id="@+id/take_photo"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/profile_photo"
