@@ -60,7 +60,7 @@ public class FriendDetailActivity extends AppCompatActivity {
             mName.setText(userJsonObject.getString("first_name") +
                     " " + userJsonObject.getString("last_name"));
             mPhone.setText(userJsonObject.getString("phone"));
-            mRank.setText("Rank: 0");
+            mRank.setText(String.valueOf(userJsonObject.getInt("rank")));
             if(!userJsonObject.isNull("photo")){
                 JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
                 Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
