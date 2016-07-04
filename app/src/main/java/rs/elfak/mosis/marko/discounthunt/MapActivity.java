@@ -23,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,6 +44,7 @@ import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserSearchEndpoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
+    private static final float mZoom = 14;
     private GoogleMap mMap;
     private SupportMapFragment mMapFragment;
     private FloatingActionButton fab;
@@ -51,6 +53,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Timer refreshTimer;
     private ArrayList<JSONObject> mDiscounts, mUsers;
     private ArrayList<Marker> discountMarkers, userMarkers;
+    private Marker mUserMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +82,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mCurrentLocation.setListener(new Response.Listener<Location>() {
             @Override
             public void onResponse(Location location) {
+                updateUserMarker();
                 updateUserLocation();
-                moveCameraToLocation(location);
+                moveCameraToLocation();
             }
         });
 
@@ -313,6 +317,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }catch (JSONException ex){}
     }
 
+    private void updateUserMarker() {
+        mUserMarker.setPosition(mCurrentLocation.getLatLng());
+    }
+
     private void startCreateDiscountActivity() {
         Intent intent = new Intent(getApplicationContext(), CreateDiscountActivity.class);
         startActivity(intent);
@@ -346,10 +354,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }catch (JSONException ex) {}
     }
 
-    private void moveCameraToLocation(Location location) {
+    private void moveCameraToLocation() {
         if(mMap != null){
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            CameraPosition position = new CameraPosition.Builder()
+                    .target(mCurrentLocation.getLatLng())
+                    .zoom(mZoom).build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
         }
     }
 
@@ -378,10 +388,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        // Add a marker in Sydney and move the camera
         LatLng latLng = mCurrentLocation.getLatLng();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.setOnMarkerClickListener(this);
+
+        // Add user location marker
+        MarkerOptions userMarkerOptions = new MarkerOptions();
+        userMarkerOptions.position(latLng);
+        mUserMarker = mMap.addMarker(userMarkerOptions);
     }
 
     @Override
