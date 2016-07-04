@@ -10,8 +10,13 @@
         android:titleCondensed="@string/add_friend"
         android:orderInCategory="2" />
 
+    <item android:id="@+id/show_friends_ranking"
+        android:title="@string/friends_rankings"
+        android:titleCondensed="@string/friends_rankings"
+        android:orderInCategory="3" />
+
     <item android:id="@+id/show_setting"
         android:title="@string/settings"
         android:titleCondensed="@string/settings"
-        android:orderInCategory="3" />
+        android:orderInCategory="4" />
 </menu>

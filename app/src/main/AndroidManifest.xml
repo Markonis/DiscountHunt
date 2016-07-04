@@ -42,7 +42,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CreateDiscountActivity" />
         <activity android:name=".DiscountDetailActivity" />
-        <activity android:name=".SettingActivity"></activity>
+        <activity android:name=".SettingActivity" />
+        <activity android:name=".FriendsRankingActivity"></activity>
     </application>
 
 </manifest>

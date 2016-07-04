@@ -374,6 +374,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         startActivity(intent);
     }
 
+    private void startFriendsRankingActivity() {
+        Intent intent = new Intent(getApplicationContext(), FriendsRankingActivity.class);
+        startActivity(intent);
+    }
+
     private void moveCameraToLocation() {
         if(mMap != null){
             CameraPosition position = new CameraPosition.Builder()
@@ -402,6 +407,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             case R.id.show_setting:
                 startSettingActivity();
+                return true;
+            case R.id.show_friends_ranking:
+                startFriendsRankingActivity();
             default:
                 return super.onContextItemSelected(item);
         }
