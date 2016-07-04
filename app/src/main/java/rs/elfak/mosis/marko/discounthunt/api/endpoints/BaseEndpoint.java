@@ -12,7 +12,7 @@ import rs.elfak.mosis.marko.discounthunt.DiscountHunt;
 
 public class BaseEndpoint {
 
-    public static final String API_URL = "https://discount-hunt-markomedia.c9users.io";
+    public static final String API_URL = "http://discount-hunt-markomedia.c9users.io";
 
     private String url;
     private String resourceName;
