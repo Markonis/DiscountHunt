@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -64,11 +65,13 @@ public class AddFriendActivity extends AppCompatActivity {
         mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                BluetoothDevice device = mUserDevices.get(position);
-                if(device.getBondState() == BluetoothDevice.BOND_BONDED){
-                    deviceBonded(device);
-                }else{
-                    createBond(device);
+                if(mCurrentDevice == null){
+                    BluetoothDevice device = mUserDevices.get(position);
+                    if(device.getBondState() == BluetoothDevice.BOND_BONDED){
+                        deviceBonded(device);
+                    }else{
+                        createBond(device);
+                    }
                 }
             }
         });
@@ -172,6 +175,7 @@ public class AddFriendActivity extends AppCompatActivity {
     }
 
     private void deviceBonded(BluetoothDevice device) {
+        mCurrentDevice = device;
         for (int i = 0; i < mUserDevices.size(); i++) {
             if (mUserDevices.get(i).getAddress().equals(device.getAddress())) {
                 createFriendship(mUsers.get(i));
@@ -191,18 +195,38 @@ public class AddFriendActivity extends AppCompatActivity {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            System.out.println("Friendship created!");
+                            friendshipCreated();
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-
+                            mCurrentDevice = null;
                         }
-                    }
-            );
-        } catch (JSONException ex) {
+                    });
+        } catch (JSONException ex) {}
+    }
 
+    private void friendshipCreated() {
+        int index = -1;
+        for(int i = 0; i < mUserDevices.size(); i++){
+            if(mCurrentDevice == mUserDevices.get(i)){
+                index = i;
+                break;
+            }
+        }
+
+        if(index > -1){
+            mCurrentDevice = null;
+            mUserDevices.remove(index);
+            mUserNames.remove(index);
+            mUsers.remove(index);
+            mListAdapter.clear();
+            mListAdapter.addAll(mUserNames);
+
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.friendship_created, Toast.LENGTH_LONG);
+            toast.show();
         }
     }
 

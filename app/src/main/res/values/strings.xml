@@ -41,6 +41,7 @@
     <string name="take_photo">Take Photo</string>
     <string name="description">Description</string>
     <string name="price">Price</string>
+    <string name="friendship_created">You have successfully made friends!</string>
     <string name="create_discount">Create Discount</string>
     <array name="categories">
         <item>Clothes</item>
