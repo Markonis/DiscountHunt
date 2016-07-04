@@ -99,8 +99,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void searchDiscounts() {
         try {
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
             JSONObject searchJsonObject = new JSONObject();
             searchJsonObject.put("query", "");
+            searchJsonObject.put("by_friends_of", userJsonObject.getInt("id"));
+            searchJsonObject.put("location_attributes", locationSearchAttributes());
             DiscountSearchEndpoint discountSearchEndpoint = new DiscountSearchEndpoint();
             discountSearchEndpoint.post(searchJsonObject,
                     new Response.Listener<JSONObject>() {
@@ -190,6 +193,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
             JSONObject searchJsonObject = new JSONObject();
             searchJsonObject.put("friends_with", userJsonObject.getInt("id"));
+            searchJsonObject.put("location_attributes", locationSearchAttributes());
             UserSearchEndpoint userSearchEndpoint = new UserSearchEndpoint();
             userSearchEndpoint.post(searchJsonObject,
                     new Response.Listener<JSONObject>() {
@@ -270,6 +274,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }catch (JSONException ex) {
             return null;
         }
+    }
+
+    private JSONObject locationSearchAttributes() {
+        JSONObject jsonObject = mCurrentLocation.toJSONObject();
+        try {
+            JSONObject settingJsonObject =
+                    DiscountHunt.currentSession.getJSONObject("user").getJSONObject("setting");
+            jsonObject.put("radius", settingJsonObject.getDouble("search_radius"));
+        }catch (JSONException ex){}
+        return jsonObject;
     }
 
     private void startCreateDiscountActivity() {
