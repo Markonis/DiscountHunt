@@ -83,7 +83,7 @@ public class SettingActivity extends AppCompatActivity {
             JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
             userJsonObject.put("setting", response);
             DiscountHunt.currentSession.put("user", userJsonObject);
-            updateView();
+            finish();
         }catch (JSONException ex){}
     }
 }
