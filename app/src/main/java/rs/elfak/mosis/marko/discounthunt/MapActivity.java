@@ -38,6 +38,7 @@ import java.util.TimerTask;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountSearchEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserEndpoint;
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserLocationChangeEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserSearchEndpoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -78,6 +79,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mCurrentLocation.setListener(new Response.Listener<Location>() {
             @Override
             public void onResponse(Location location) {
+                updateUserLocation();
                 moveCameraToLocation(location);
             }
         });
@@ -89,6 +91,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         refreshTimerTask = new TimerTask() {
             @Override
             public void run() {
+                updateUserLocation();
                 searchDiscounts();
                 searchUsers();
             }
@@ -284,6 +287,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             jsonObject.put("radius", settingJsonObject.getDouble("search_radius"));
         }catch (JSONException ex){}
         return jsonObject;
+    }
+
+    private void updateUserLocation() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
+            jsonObject.put("user_id", userJsonObject.getInt("id"));
+            jsonObject.put("location_attributes", mCurrentLocation.toJSONObject());
+            UserLocationChangeEndpoint endpoint = new UserLocationChangeEndpoint();
+            endpoint.post(jsonObject,
+                    new Response.Listener() {
+                        @Override
+                        public void onResponse(Object response) {
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }
+            );
+        }catch (JSONException ex){}
     }
 
     private void startCreateDiscountActivity() {
