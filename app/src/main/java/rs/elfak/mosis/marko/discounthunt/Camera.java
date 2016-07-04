@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 
 public class Camera {
     public static final int CAPTURE_IMAGE_REQUEST_CODE = 1;
