@@ -44,7 +44,9 @@ import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserSearchEndpoint;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private static final float mZoom = 14;
+    private static final float ZOOM = 14;
+    private static final int MARKER_SIZE = 96;
+    private static final long REFRESH_INTERVAL = 5000;
     private GoogleMap mMap;
     private SupportMapFragment mMapFragment;
     private FloatingActionButton fab;
@@ -101,7 +103,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         };
         refreshTimer = new Timer();
-        refreshTimer.schedule(refreshTimerTask, 1000, 10000);
+        refreshTimer.schedule(refreshTimerTask, 1000, REFRESH_INTERVAL);
     }
 
     private void searchDiscounts() {
@@ -184,10 +186,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             markerOptions.position(new LatLng(
                     locationJsonObject.getDouble("lat"),
                     locationJsonObject.getDouble("lng")));
-            if(discountJsonObject.has("photo")) {
+            if(!discountJsonObject.isNull("photo")) {
                 JSONObject photoJsonObject = discountJsonObject.getJSONObject("photo");
-                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                Bitmap bitmap = resizedBitmap(
+                        Camera.decodeBase64(photoJsonObject.getString("data")));
                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                markerOptions.anchor(0.5f, 0.5f);
+            }else{
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             }
             return markerOptions;
         }catch (JSONException ex) {
@@ -272,10 +278,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             markerOptions.position(new LatLng(
                     locationJsonObject.getDouble("lat"),
                     locationJsonObject.getDouble("lng")));
-            if(userJsonObject.has("photo")) {
+            if(!userJsonObject.isNull("photo")) {
                 JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
-                Bitmap bitmap = Camera.decodeBase64(photoJsonObject.getString("data"));
+                Bitmap bitmap = resizedBitmap(
+                        Camera.decodeBase64(photoJsonObject.getString("data")));
                 markerOptions.icon(BitmapDescriptorFactory.fromBitmap(bitmap));
+                markerOptions.anchor(0.5f, 0.5f);
+            }else{
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
             }
             return markerOptions;
         }catch (JSONException ex) {
@@ -321,6 +331,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mUserMarker.setPosition(mCurrentLocation.getLatLng());
     }
 
+    private Bitmap resizedBitmap(Bitmap bitmap){
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, MARKER_SIZE, MARKER_SIZE, false);
+        return resizedBitmap;
+    }
+
     private void startCreateDiscountActivity() {
         Intent intent = new Intent(getApplicationContext(), CreateDiscountActivity.class);
         startActivity(intent);
@@ -358,7 +373,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if(mMap != null){
             CameraPosition position = new CameraPosition.Builder()
                     .target(mCurrentLocation.getLatLng())
-                    .zoom(mZoom).build();
+                    .zoom(ZOOM).build();
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
         }
     }
