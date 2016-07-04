@@ -369,6 +369,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }catch (JSONException ex) {}
     }
 
+    private void startSettingActivity() {
+        Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+        startActivity(intent);
+    }
+
     private void moveCameraToLocation() {
         if(mMap != null){
             CameraPosition position = new CameraPosition.Builder()
@@ -395,6 +400,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case R.id.show_add_friend:
                 startAddFriendActivity();
                 return true;
+            case R.id.show_setting:
+                startSettingActivity();
             default:
                 return super.onContextItemSelected(item);
         }

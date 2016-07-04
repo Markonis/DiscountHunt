@@ -58,4 +58,8 @@
     <string name="author">Author</string>
     <string name="author_photo">Author\'s Photo</string>
     <string name="votes">Votes:</string>
+    <string name="search_radius">Search Radius</string>
+    <string name="enable_background_process">Enable Background Process</string>
+    <string name="settings">Settings</string>
+    <string name="save_settings">Save Settings</string>
 </resources>

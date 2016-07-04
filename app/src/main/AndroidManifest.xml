@@ -41,7 +41,8 @@
             android:label="@string/title_activity_discounts_list"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".CreateDiscountActivity" />
-        <activity android:name=".DiscountDetailActivity"></activity>
+        <activity android:name=".DiscountDetailActivity" />
+        <activity android:name=".SettingActivity"></activity>
     </application>
 
 </manifest>

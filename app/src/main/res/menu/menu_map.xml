@@ -9,4 +9,9 @@
         android:title="@string/add_friend"
         android:titleCondensed="@string/add_friend"
         android:orderInCategory="2" />
+
+    <item android:id="@+id/show_setting"
+        android:title="@string/settings"
+        android:titleCondensed="@string/settings"
+        android:orderInCategory="3" />
 </menu>
