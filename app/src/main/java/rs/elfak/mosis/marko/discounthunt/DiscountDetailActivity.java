@@ -1,5 +1,6 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -25,9 +26,10 @@ import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountVoteEndpoint;
 public class DiscountDetailActivity extends AppCompatActivity {
 
     private JSONObject discountJsonObject;
-    private TextView mTitle, mDescription, mVotes, mAuthor, mPrice;
+    private TextView mTitle, mDescription, mVotes, mAuthorName, mPrice;
     private ImageButton mVoteUp;
     private ImageView mPhoto, mAuthorPhoto;
+    private View mAuthor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,8 @@ public class DiscountDetailActivity extends AppCompatActivity {
         mDescription = (TextView) findViewById(R.id.description);
         mPrice = (TextView) findViewById(R.id.price);
         mVotes = (TextView) findViewById(R.id.votes);
-        mAuthor = (TextView) findViewById(R.id.author);
+        mAuthorName = (TextView) findViewById(R.id.author_name);
+        mAuthor = findViewById(R.id.author);
         mPhoto = (ImageView) findViewById(R.id.photo);
         mAuthorPhoto = (ImageView) findViewById(R.id.author_photo);
         mVoteUp = (ImageButton) findViewById(R.id.vote_up);
@@ -50,6 +53,13 @@ public class DiscountDetailActivity extends AppCompatActivity {
         });
 
         loadData();
+
+        mAuthor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startFriendDetailActivity();
+            }
+        });
     }
 
     private void loadData() {
@@ -87,7 +97,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
             NumberFormat currency = NumberFormat.getCurrencyInstance();
             mPrice.setText(currency.format(discountJsonObject.getDouble("price")));
             JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
-            mAuthor.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
+            mAuthorName.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
 
             if(!userJsonObject.isNull("photo")){
                 JSONObject photoJsonObject = userJsonObject.getJSONObject("photo");
@@ -127,6 +137,15 @@ public class DiscountDetailActivity extends AppCompatActivity {
             int votes = discountJsonObject.getInt("votes");
             discountJsonObject.put("votes", votes + 1);
             updateView();
+        }catch (JSONException ex){}
+    }
+
+    private void startFriendDetailActivity() {
+        try {
+            JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
+            Intent intent = new Intent(getApplicationContext(), FriendDetailActivity.class);
+            intent.putExtra("id", userJsonObject.getInt("id"));
+            startActivity(intent);
         }catch (JSONException ex){}
     }
 }
