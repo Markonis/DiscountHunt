@@ -16,8 +16,8 @@
         completions."
     </string>
     <string name="profile_photo">Profile Photo</string>
-    <string name="title_activity_signup">Sign up</string>
-    <string name="title_activity_signin">Sign in</string>
+    <string name="title_activity_signup">Discount Hunt</string>
+    <string name="title_activity_signin">Discount Hunt</string>
     <string name="title_activity_map">Map</string>
     <string name="signal_logo">Signal Logo</string>
     <string name="friends_photo">Friend\'s Photo</string>
