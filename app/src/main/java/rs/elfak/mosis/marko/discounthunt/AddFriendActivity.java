@@ -65,7 +65,11 @@ public class AddFriendActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BluetoothDevice device = mUserDevices.get(position);
-                createBond(device);
+                if(device.getBondState() == BluetoothDevice.BOND_BONDED){
+                    deviceBonded(device);
+                }else{
+                    createBond(device);
+                }
             }
         });
     }
