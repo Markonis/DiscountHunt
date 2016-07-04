@@ -1,6 +1,8 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -38,6 +40,7 @@ public class DiscountsListActivity extends AppCompatActivity {
     private EditText mQueryText;
     private ListView mList;
     private JSONArray mDiscounts;
+    private CurrentLocation mCurrentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,7 @@ public class DiscountsListActivity extends AppCompatActivity {
             }
         });
 
+        mCurrentLocation = new CurrentLocation((LocationManager) getSystemService(Context.LOCATION_SERVICE));
         search();
     }
 
@@ -99,7 +103,10 @@ public class DiscountsListActivity extends AppCompatActivity {
         String query = mQueryText.getText().toString();
         JSONObject searchJsonObject = new JSONObject();
         try {
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
             searchJsonObject.put("query", query);
+            searchJsonObject.put("location_attributes", locationSearchAttributes());
+            searchJsonObject.put("by_friends_of", userJsonObject.getInt("id"));
             DiscountSearchEndpoint endpoint = new DiscountSearchEndpoint();
             endpoint.post(searchJsonObject,
                     new Response.Listener<JSONObject>() {
@@ -115,9 +122,17 @@ public class DiscountsListActivity extends AppCompatActivity {
                         }
                     }
             );
-        }catch (JSONException ex) {
+        }catch (JSONException ex) {}
+    }
 
-        }
+    private JSONObject locationSearchAttributes() {
+        JSONObject jsonObject = mCurrentLocation.toJSONObject();
+        try {
+            JSONObject settingJsonObject =
+                    DiscountHunt.currentSession.getJSONObject("user").getJSONObject("setting");
+            jsonObject.put("radius", settingJsonObject.getDouble("search_radius"));
+        }catch (JSONException ex){}
+        return jsonObject;
     }
 
     private void populateList(JSONObject searchJsonObject) {
