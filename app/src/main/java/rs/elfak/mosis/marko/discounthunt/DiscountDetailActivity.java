@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.text.NumberFormat;
 
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountEndpoint;
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountVoteEndpoint;
 
 public class DiscountDetailActivity extends AppCompatActivity {
 
@@ -99,16 +100,16 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
     private void voteUp() {
         try {
-            int id = discountJsonObject.getInt("id");
-            int votes = discountJsonObject.getInt("votes");
-            discountJsonObject.put("votes", votes + 1);
-            DiscountEndpoint discountEndpoint = new DiscountEndpoint();
-
-            discountEndpoint.put(id, discountJsonObject,
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
+            DiscountVoteEndpoint endpoint = new DiscountVoteEndpoint();
+            JSONObject voteJsonObject = new JSONObject();
+            voteJsonObject.put("discount_id", discountJsonObject.getInt("id"));
+            voteJsonObject.put("user_id", userJsonObject.getInt("id"));
+            endpoint.post(voteJsonObject,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            updateView();
+                            voted();
                         }
                     },
                     new Response.ErrorListener() {
@@ -119,5 +120,13 @@ public class DiscountDetailActivity extends AppCompatActivity {
                     }
             );
         }catch (JSONException ex) {}
+    }
+
+    private void voted(){
+        try {
+            int votes = discountJsonObject.getInt("votes");
+            discountJsonObject.put("votes", votes + 1);
+            updateView();
+        }catch (JSONException ex){}
     }
 }
