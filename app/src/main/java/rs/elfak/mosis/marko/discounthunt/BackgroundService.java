@@ -4,13 +4,27 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import rs.elfak.mosis.marko.discounthunt.api.endpoints.UserLocationChangeEndpoint;
+
 public class BackgroundService extends Service {
+    private static final long REFRESH_INTERVAL = 20000;
     private NotificationManager mNM;
 
     // Unique Identification Number for the Notification.
@@ -22,18 +36,19 @@ public class BackgroundService extends Service {
             return BackgroundService.this;
         }
     }
+    private final IBinder mBinder = new LocalBinder();
+    private Timer refreshTimer;
+    private CurrentLocation mCurrentLocation;
 
     @Override
     public void onCreate() {
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-
-        // Display a notification about us starting.  We put an icon in the status bar.
-        showNotification();
+        mCurrentLocation = new CurrentLocation((LocationManager) getSystemService(Context.LOCATION_SERVICE));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("LocalService", "Received start id " + startId + ": " + intent);
+        startRefreshTimer();
         return START_STICKY;
     }
 
@@ -51,13 +66,43 @@ public class BackgroundService extends Service {
         return mBinder;
     }
 
-    // This is the object that receives interactions from clients.  See
-    // RemoteService for a more complete example.
-    private final IBinder mBinder = new LocalBinder();
+    private void startRefreshTimer() {
+        if(refreshTimer == null){
+            TimerTask refreshTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    updateUserLocation();
+                }
+            };
+            refreshTimer = new Timer();
+            refreshTimer.schedule(refreshTimerTask, 1000, REFRESH_INTERVAL);
+        }
+    }
 
-    /**
-     * Show a notification while this service is running.
-     */
+    private void updateUserLocation() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
+            jsonObject.put("user_id", userJsonObject.getInt("id"));
+            jsonObject.put("location_attributes", mCurrentLocation.toJSONObject());
+            UserLocationChangeEndpoint endpoint = new UserLocationChangeEndpoint();
+            endpoint.post(jsonObject,
+                    new Response.Listener() {
+                        @Override
+                        public void onResponse(Object response) {
+
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+
+                        }
+                    }
+            );
+        }catch (Exception ex){}
+    }
+
     private void showNotification() {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = getText(R.string.background_service_started);
