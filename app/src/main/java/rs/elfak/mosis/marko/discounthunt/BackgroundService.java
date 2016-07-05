@@ -48,16 +48,15 @@ public class BackgroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Toast.makeText(this, R.string.background_service_started, Toast.LENGTH_SHORT).show();
         startRefreshTimer();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        // Cancel the persistent notification.
         mNM.cancel(NOTIFICATION);
-
-        // Tell the user we stopped.
+        refreshTimer.purge();
         Toast.makeText(this, R.string.background_service_stopped, Toast.LENGTH_SHORT).show();
     }
 

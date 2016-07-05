@@ -49,6 +49,7 @@ public class SessionActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject sessionJsonObject) {
                         DiscountHunt.currentSession = sessionJsonObject;
+                        manageBackgroundProcess();
                         startMapActivity();
                         finish();
                     }
@@ -66,6 +67,19 @@ public class SessionActivity extends AppCompatActivity {
     protected void startMapActivity() {
         Intent intent = new Intent(getApplicationContext(), MapActivity.class);
         startActivity(intent);
+    }
+
+    private void manageBackgroundProcess() {
+        Intent serviceIntent = new Intent(getApplicationContext(), BackgroundService.class);
+        try {
+            JSONObject settingJsonObject = DiscountHunt.currentSession.getJSONObject("user")
+                    .getJSONObject("setting");
+            if(settingJsonObject.getBoolean("enable_background_process")){
+                startService(serviceIntent);
+            }else{
+                stopService(serviceIntent);
+            }
+        }catch (JSONException ex){}
     }
 
     /**

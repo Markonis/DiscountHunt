@@ -1,5 +1,6 @@
 package rs.elfak.mosis.marko.discounthunt;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -50,7 +51,7 @@ public class SettingActivity extends AppCompatActivity {
     private void updateView() {
         try {
             mSearchRadius.setText(String.valueOf(mSettingJsonObject.getInt("search_radius")));
-            mEnableBackgroundProcess.setChecked(mSettingJsonObject.getBoolean("enable_background_service"));
+            mEnableBackgroundProcess.setChecked(mSettingJsonObject.getBoolean("enable_background_process"));
         }catch (JSONException ex){}
     }
 
@@ -83,7 +84,21 @@ public class SettingActivity extends AppCompatActivity {
             JSONObject userJsonObject = DiscountHunt.currentSession.getJSONObject("user");
             userJsonObject.put("setting", response);
             DiscountHunt.currentSession.put("user", userJsonObject);
+            manageBackgroundProcess();
             finish();
+        }catch (JSONException ex){}
+    }
+
+    private void manageBackgroundProcess() {
+        Intent serviceIntent = new Intent(getApplicationContext(), BackgroundService.class);
+        try {
+            JSONObject settingJsonObject = DiscountHunt.currentSession.getJSONObject("user")
+                    .getJSONObject("setting");
+            if(settingJsonObject.getBoolean("enable_background_process")){
+                startService(serviceIntent);
+            }else{
+                stopService(serviceIntent);
+            }
         }catch (JSONException ex){}
     }
 }

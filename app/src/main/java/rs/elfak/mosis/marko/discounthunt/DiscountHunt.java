@@ -20,8 +20,5 @@ public class DiscountHunt extends MultiDexApplication {
         super.onCreate();
         context = getApplicationContext();
         requestQueue = Volley.newRequestQueue(context);
-
-        Intent serviceIntent = new Intent(getApplicationContext(), BackgroundService.class);
-        startService(serviceIntent);
     }
 }
