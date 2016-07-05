@@ -29,8 +29,8 @@ public class DiscountDetailActivity extends AppCompatActivity {
     private JSONObject discountJsonObject;
     private TextView mTitle, mDescription, mVotes, mAuthorName, mPrice;
     private ImageButton mVoteUp;
-    private ImageView mPhoto, mAuthorPhoto;
-    private View mAuthor;
+    private ImageButton mAuthorPhoto;
+    private ImageView mPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +42,8 @@ public class DiscountDetailActivity extends AppCompatActivity {
         mPrice = (TextView) findViewById(R.id.price);
         mVotes = (TextView) findViewById(R.id.votes);
         mAuthorName = (TextView) findViewById(R.id.author_name);
-        mAuthor = findViewById(R.id.author);
         mPhoto = (ImageView) findViewById(R.id.photo);
-        mAuthorPhoto = (ImageView) findViewById(R.id.author_photo);
+        mAuthorPhoto = (ImageButton) findViewById(R.id.author_photo);
         mVoteUp = (ImageButton) findViewById(R.id.vote_up);
         mVoteUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +54,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
 
         loadData();
 
-        mAuthor.setOnClickListener(new View.OnClickListener() {
+        mAuthorPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startFriendDetailActivity();
