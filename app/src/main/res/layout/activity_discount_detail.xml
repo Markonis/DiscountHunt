@@ -39,7 +39,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Discount Title"
                     android:id="@+id/title"
                     android:layout_gravity="center_vertical"
                     android:layout_marginBottom="10dp" />
@@ -54,7 +53,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="@string/votes"
                         android:id="@+id/textView2"
                         android:layout_gravity="center_vertical" />
 
@@ -62,7 +60,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="53"
                         android:id="@+id/votes"
                         android:layout_gravity="center_vertical"
                         android:contextClickable="false"
@@ -86,7 +83,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="$40.00"
                     android:id="@+id/price"
                     android:layout_marginBottom="10dp" />
 
@@ -98,7 +94,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Some cool description of the discount at hand. For example: this is a really nice shirt!"
             android:id="@+id/description"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"
@@ -130,7 +125,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Johnny Appleseed"
                 android:id="@+id/author_name"
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
