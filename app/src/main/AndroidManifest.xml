@@ -44,6 +44,9 @@
         <activity android:name=".DiscountDetailActivity" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".FriendsRankingActivity"></activity>
+        <service
+            android:name=".BackgroundService"
+            android:label="Discount Hunt Background Process" >
+        </service>
     </application>
-
 </manifest>

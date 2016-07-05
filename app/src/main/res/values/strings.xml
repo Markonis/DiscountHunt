@@ -63,4 +63,7 @@
     <string name="settings">Settings</string>
     <string name="save_settings">Save Settings</string>
     <string name="friends_rankings">Friends Rankings</string>
+    <string name="background_service_started">Service started.</string>
+    <string name="background_service_stopped">Service stopped.</string>
+    <string name="background_service_label">Discount Hunt Background Process</string>
 </resources>

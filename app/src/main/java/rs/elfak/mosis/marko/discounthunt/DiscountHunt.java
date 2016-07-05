@@ -2,6 +2,7 @@ package rs.elfak.mosis.marko.discounthunt;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.support.multidex.MultiDexApplication;
 
 import com.android.volley.RequestQueue;
@@ -19,5 +20,8 @@ public class DiscountHunt extends MultiDexApplication {
         super.onCreate();
         context = getApplicationContext();
         requestQueue = Volley.newRequestQueue(context);
+
+        Intent serviceIntent = new Intent(getApplicationContext(), BackgroundService.class);
+        startService(serviceIntent);
     }
 }
