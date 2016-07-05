@@ -5,12 +5,7 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.JsonReader;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,10 +20,8 @@ import com.android.volley.VolleyError;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountSearchEndpoint;
 
@@ -56,8 +49,8 @@ public class DiscountsListActivity extends AppCompatActivity {
         });
 
         mQueryText = (EditText) findViewById(R.id.query_text);
-        mCountText = (TextView) findViewById(R.id.discounts_list_count_text);
-        mRadiusText = (TextView) findViewById(R.id.discounts_list_radius_text);
+        mCountText = (TextView) findViewById(R.id.count);
+        mRadiusText = (TextView) findViewById(R.id.radius);
 
         mFab = (FloatingActionButton) findViewById(R.id.create_discount);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +105,7 @@ public class DiscountsListActivity extends AppCompatActivity {
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject searchJsonObject) {
-                        populateList(searchJsonObject);
+                        updateView(searchJsonObject);
                         }
                     },
                     new Response.ErrorListener() {
@@ -135,7 +128,7 @@ public class DiscountsListActivity extends AppCompatActivity {
         return jsonObject;
     }
 
-    private void populateList(JSONObject searchJsonObject) {
+    private void updateView(JSONObject searchJsonObject) {
         ArrayList<String> items = new ArrayList<>();
         try {
             String result = searchJsonObject.getString("result");
@@ -145,6 +138,15 @@ public class DiscountsListActivity extends AppCompatActivity {
                 String itemStr = discountJsonObject.getString("title");
                 items.add(itemStr);
             }
+
+            String countStr = "Showing " + mDiscounts.length() + " discounts";
+            mCountText.setText(countStr);
+
+            double radius = DiscountHunt.currentSession.getJSONObject("user")
+                    .getJSONObject("setting").getDouble("search_radius");
+            String radiusStr = "in " + radius + " degrees radius";
+            mRadiusText.setText(radiusStr);
+
         } catch (JSONException e) {}
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items);

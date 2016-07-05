@@ -21,19 +21,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/discounts_list_count_text"
-            android:text="Showing 32 discounts"
+            android:id="@+id/count"
             android:layout_marginRight="10dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="in 5 km radius"
-            android:id="@+id/discounts_list_radius_text"
-            android:layout_below="@+id/discounts_list_count_text"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:id="@+id/radius" />
 
         <LinearLayout
             android:orientation="horizontal"
