@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.NumberFormat;
+import java.util.Locale;
 
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountEndpoint;
 import rs.elfak.mosis.marko.discounthunt.api.endpoints.DiscountVoteEndpoint;
@@ -94,7 +95,7 @@ public class DiscountDetailActivity extends AppCompatActivity {
             mTitle.setText(discountJsonObject.getString("title"));
             mDescription.setText(discountJsonObject.getString("description"));
             mVotes.setText(String.valueOf(discountJsonObject.getInt("votes")));
-            NumberFormat currency = NumberFormat.getCurrencyInstance();
+            NumberFormat currency = NumberFormat.getCurrencyInstance(Locale.US);
             mPrice.setText(currency.format(discountJsonObject.getDouble("price")));
             JSONObject userJsonObject = discountJsonObject.getJSONObject("user");
             mAuthorName.setText(userJsonObject.getString("first_name") + " " + userJsonObject.getString("last_name"));
